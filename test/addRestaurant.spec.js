@@ -3,7 +3,7 @@ const {suite} = require('selenium-webdriver/testing');
 const assert = require("assert");
 
 suite(function (env) {
-  describe('First test', function () {
+  describe('Restaurant table', function () {
     let driver;
 
     before(async function () {
@@ -12,7 +12,7 @@ suite(function (env) {
 
     after(async () => await driver.quit());
 
-    it('First Project test', async function () {
+    it('Add restaurant', async function () {
         this.timeout(5000); // Increase timeout to 5000ms (5 seconds)
       await driver.get('http://localhost:3000');
 
@@ -24,16 +24,22 @@ suite(function (env) {
       let nameInput = await driver.findElement(By.id('name'));
       let locationInput = await driver.findElement(By.id('location'));
       let priceRangeInput = await driver.findElement(By.id('price_range'));
-      let submitButton = await driver.findElement(By.css('button'));
+      let addButton = await driver.findElement(By.name('add'));
+      // let updateButton = await driver.findElement(By.name('update'));
+      // let deleteButton = await driver.findElement(By.id('delete_restaurant'));
 
-      await nameInput.sendKeys('Name');
-      await locationInput.sendKeys('Location');
+
+      await nameInput.sendKeys('Port Said');
+      await locationInput.sendKeys('Tel Aviv');
       await priceRangeInput.sendKeys('$$'); 
-      await submitButton.click();
+      await addButton.click();
+      // await updateButton.click();
+      // await deleteButton.click();
+
 
     //   let message = await driver.findElement(By.id('message'));
     //   let value = await message.getText();
-    //   assert.equal("Received!", value);
+      // assert.equal("Received!", value);
     });
   });
 }, { browsers: [Browser.CHROME, Browser.FIREFOX]});
