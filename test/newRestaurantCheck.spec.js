@@ -1,50 +1,47 @@
-const { By, Builder, Browser } = require('selenium-webdriver');
-const { suite } = require('selenium-webdriver/testing');
+const { By, Builder, Browser, until } = require('selenium-webdriver');
+const { describe, before, after, afterEach, it } = require('mocha');
 const assert = require('assert');
 
-suite(async function (env) {
-  describe('Restaurant table', function () {
+
+describe('Restaurant table', function () {
+    this.timeout(10000);
     let driver;
 
     before(async function () {
-      driver = await new Builder().forBrowser('chrome').build();
+        driver = await new Builder().forBrowser('chrome').build();
     });
 
-    after(async () => await driver.quit());
-
-    it('check the latest restaurant in the table', async function () {
-      await driver.get('http://localhost:3000'); 
-
-      // Locate the table element
-      let table = await driver.findElement(By.css('.table'));
-
-      // Get all rows in the table
-      let rows = await table.findElements(By.css('tbody tr'));
-
-      // Access the last row (latest restaurant)
-      let latestRow = rows[rows.length - 1];
-
-      // Get the cells within the row
-      let cells = await latestRow.findElements(By.css('td'));
-
-      // Extract the restaurant information from the cells
-      let name = await cells[0].getText();
-      let location = await cells[1].getText();
-      let priceRange = await cells[2].getText();
-      let rating = await cells[3].getText();
-
-      // Perform assertions on the latest restaurant information
-      assert.equal(name, 'Port Said');
-      assert.equal(location, 'Tel Aviv');
-      assert.equal(priceRange, '$$');
-      // ... perform additional assertions for rating or other properties
-
-      // Output the latest restaurant information
-      console.log('Latest Restaurant Information:');
-      console.log('Name:', name);
-      console.log('Location:', location);
-      console.log('Price Range:', priceRange);
-      console.log('Rating:', rating);
+    afterEach(async function () {
+        // Add cleanup tasks here if needed after each test case
     });
-  });
+
+    after(async function () { await driver.quit(); });
+
+    it('check the latest restaurant in the table', async function (done) {
+        this.timeout(5000);
+        await driver.get('http://localhost:3000');
+
+        await driver.wait(until.elementLocated(By.className('table')));
+
+
+        // Access the last row (latest restaurant)
+        const lastRow = await driver.findElement(By.xpath('//table[@class="table"]/tbody/tr[last()-1]'));
+
+
+        // Get the cells within the row
+        const cells = await lastRow.findElements(By.css('td'));
+
+        // Get the text values of the cells in the last row
+        let name = await cells[0].getText();
+        let location = await cells[1].getText();
+        let priceRange = await cells[2].getText();
+        let rating = await cells[3].getText();
+
+        // Assert the values of the last restaurant
+        assert.equal(name, 'Port Said');
+        assert.equal(location, 'Tel Aviv');
+        assert.equal(priceRange, '$$');
+        done()
+    });
 });
+
