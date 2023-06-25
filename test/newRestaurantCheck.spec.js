@@ -1,34 +1,70 @@
-const { By, Builder, Browser, until } = require('selenium-webdriver');
-const { describe, before, after, afterEach, it } = require('mocha');
+const { By, Builder, Key, Browser } = require('selenium-webdriver');
+const {suite} = require('selenium-webdriver/testing');
+
+// const { describe, before, after, afterEach, it } = require('mocha');
 const assert = require('assert');
 
 
-describe('Restaurant table', function () {
-    this.timeout(10000);
-    let driver;
+let driver;
 
-    before(async function () {
-        driver = await new Builder().forBrowser('chrome').build();
-    });
+beforeAll(async () => {
+    driver = await new Builder().forBrowser('chrome').build();
+  }, 20000);
+  
+  afterAll(async () => {
+    await driver.quit();
+  });
+  
 
-    afterEach(async function () {
-        // Add cleanup tasks here if needed after each test case
-    });
 
-    after(async function () { await driver.quit(); });
+// describe('Restaurant table', function () {
+//     this.timeout(20000);
 
-    it('check the latest restaurant in the table', async function (done) {
-        this.timeout(5000);
+//     before(async function () {
+//         driver = await new Builder().forBrowser('chrome').build();
+//     });
+
+//     afterEach(async function () {
+//     });
+
+//     after(async function () { await driver.quit(); });
+
+    test('add restaurant', async function () {
+        jest.setTimeout(5000); // Increase timeout to 5000ms (5 seconds)
         await driver.get('http://localhost:3000');
 
-        await driver.wait(until.elementLocated(By.className('table')));
+
+        // await driver.manage().setTimeouts({ implicit: 500 });
+
+        let nameInput = await driver.findElement(By.id('name'));
+        let locationInput = await driver.findElement(By.id('location'));
+        let priceRangeInput = await driver.findElement(By.id('price_range'));
+        let addButton = await driver.findElement(By.name('add'));
+        // let updateButton = await driver.findElement(By.name('update'));
+        // let deleteButton = await driver.findElement(By.id('delete_restaurant'));
 
 
-        // Access the last row (latest restaurant)
-        const lastRow = await driver.findElement(By.xpath('//table[@class="table"]/tbody/tr[last()-1]'));
+        await nameInput.sendKeys('Port Said');
+        await locationInput.sendKeys('Tel Aviv');
+        await priceRangeInput.sendKeys('$$');
+        await addButton.click();
+        // await updateButton.click();
+        // await deleteButton.click();
+    });
+
+    test('check the latest restaurant in the table', async function () {
+        jest.setTimeout(5000);
+        await driver.get('http://localhost:3000');
+
+        const restaurantTable = await driver.findElement(By.className('restaurant-table'));
+        const tableBody = await restaurantTable.findElement(By. className('restaurant-table-body'));
+        const tableRow = await tableBody.findElements(By.css('.restaurant-table-row'));
 
 
-        // Get the cells within the row
+
+        const lastRow = tableRow[tableRow.length - 1];
+
+
         const cells = await lastRow.findElements(By.css('td'));
 
         // Get the text values of the cells in the last row
@@ -41,7 +77,8 @@ describe('Restaurant table', function () {
         assert.equal(name, 'Port Said');
         assert.equal(location, 'Tel Aviv');
         assert.equal(priceRange, '$$');
-        done()
+
     });
-});
+    // { browsers: [Browser.CHROME, Browser.FIREFOX] };
+// });
 

@@ -2,5 +2,8 @@
   "dependencies": {
     "mocha": "^10.2.0",
     "selenium-webdriver": "^4.10.0"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0"
   }
 }
