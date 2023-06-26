@@ -1,5 +1,5 @@
 const { By, Builder, Key, Browser } = require('selenium-webdriver');
-const {suite} = require('selenium-webdriver/testing');
+const { suite } = require('selenium-webdriver/testing');
 
 // const { describe, before, after, afterEach, it } = require('mocha');
 const assert = require('assert');
@@ -9,12 +9,12 @@ let driver;
 
 beforeAll(async () => {
     driver = await new Builder().forBrowser('chrome').build();
-  }, 20000);
-  
-  afterAll(async () => {
+}, 20000);
+
+afterAll(async () => {
     await driver.quit();
-  });
-  
+});
+
 
 
 // describe('Restaurant table', function () {
@@ -29,56 +29,62 @@ beforeAll(async () => {
 
 //     after(async function () { await driver.quit(); });
 
-    test('add restaurant', async function () {
-        jest.setTimeout(5000); // Increase timeout to 5000ms (5 seconds)
-        await driver.get('http://localhost:3000');
+test('add restaurant', async function () {
+    jest.setTimeout(5000); // Increase timeout to 5000ms (5 seconds)
+    await driver.get('http://localhost:3000');
 
 
-        // await driver.manage().setTimeouts({ implicit: 500 });
+    // await driver.manage().setTimeouts({ implicit: 500 });
 
-        let nameInput = await driver.findElement(By.id('name'));
-        let locationInput = await driver.findElement(By.id('location'));
-        let priceRangeInput = await driver.findElement(By.id('price_range'));
-        let addButton = await driver.findElement(By.name('add'));
-        // let updateButton = await driver.findElement(By.name('update'));
-        // let deleteButton = await driver.findElement(By.id('delete_restaurant'));
-
-
-        await nameInput.sendKeys('Port Said');
-        await locationInput.sendKeys('Tel Aviv');
-        await priceRangeInput.sendKeys('$$');
-        await addButton.click();
-        // await updateButton.click();
-        // await deleteButton.click();
-    });
-
-    test('check the latest restaurant in the table', async function () {
-        jest.setTimeout(5000);
-        await driver.get('http://localhost:3000');
-
-        const restaurantTable = await driver.findElement(By.className('restaurant-table'));
-        const tableBody = await restaurantTable.findElement(By. className('restaurant-table-body'));
-        const tableRow = await tableBody.findElements(By.css('.restaurant-table-row'));
+    let nameInput = await driver.findElement(By.id('name'));
+    let locationInput = await driver.findElement(By.id('location'));
+    let priceRangeInput = await driver.findElement(By.id('price_range'));
+    let addButton = await driver.findElement(By.name('add'));
+    // let updateButton = await driver.findElement(By.css('tr.button.btn.btn-warning'));
+    let deleteButton = await driver.findElement(By.className("btn btn-danger"));
 
 
+    await nameInput.sendKeys('Port Said');
+    await locationInput.sendKeys('Tel Aviv');
+    await priceRangeInput.sendKeys('$$');
+    await addButton.click();
+    // await updateButton.click();
+    await deleteButton.click();
+});
 
-        const lastRow = tableRow[tableRow.length - 1];
+test('check the latest restaurant in the table', async function () {
+    jest.setTimeout(5000);
+    await driver.get('http://localhost:3000');
+
+    const restaurantTable = await driver.findElement(By.css("table"));
+    const html_1 = await restaurantTable.getAttribute("innerHTML");
 
 
-        const cells = await lastRow.findElements(By.css('td'));
+    const tableBody = await restaurantTable.findElement(By.css("tbody"));
+    const html = await tableBody.getAttribute("innerHTML");
 
-        // Get the text values of the cells in the last row
-        let name = await cells[0].getText();
-        let location = await cells[1].getText();
-        let priceRange = await cells[2].getText();
-        let rating = await cells[3].getText();
+    const tableRows = await tableBody.findElements(By.css("tr"));
 
-        // Assert the values of the last restaurant
-        assert.equal(name, 'Port Said');
-        assert.equal(location, 'Tel Aviv');
-        assert.equal(priceRange, '$$');
 
-    });
+    expect(tableRows.length).toBeGreaterThan(1);
+
+    const lastRow = tableRows[tableRows.length - 1];
+
+
+    const cells = await lastRow.findElements(By.css('td'));
+
+    // Get the text values of the cells in the last row
+    let name = await cells[0].getText();
+    let location = await cells[1].getText();
+    let priceRange = await cells[2].getText();
+    let rating = await cells[3].getText();
+
+    // Assert the values of the last restaurant
+    assert.equal(name, 'Port Said');
+    assert.equal(location, 'Tel Aviv');
+    assert.equal(priceRange, '$$');
+
+});
     // { browsers: [Browser.CHROME, Browser.FIREFOX] };
 // });
 
