@@ -1,6 +1,6 @@
 const { By, Builder, Key, Browser } = require('selenium-webdriver');
-const { suite } = require('selenium-webdriver/testing');
-
+// const { suite } = require('selenium-webdriver/testing');
+const axios = require('axios');
 // const { describe, before, after, afterEach, it } = require('mocha');
 const assert = require('assert');
 
@@ -41,7 +41,7 @@ test('add restaurant', async function () {
     let priceRangeInput = await driver.findElement(By.id('price_range'));
     let addButton = await driver.findElement(By.name('add'));
     // let updateButton = await driver.findElement(By.css('tr.button.btn.btn-warning'));
-    let deleteButton = await driver.findElement(By.className("btn btn-danger"));
+    // let deleteButton = await driver.findElement(By.className("btn btn-danger"));
 
 
     await nameInput.sendKeys('Port Said');
@@ -49,8 +49,9 @@ test('add restaurant', async function () {
     await priceRangeInput.sendKeys('$$');
     await addButton.click();
     // await updateButton.click();
-    await deleteButton.click();
+    // await deleteButton.click();
 });
+
 
 test('check the latest restaurant in the table', async function () {
     jest.setTimeout(5000);
@@ -85,6 +86,26 @@ test('check the latest restaurant in the table', async function () {
     assert.equal(priceRange, '$$');
 
 });
-    // { browsers: [Browser.CHROME, Browser.FIREFOX] };
-// });
+
+test('check if the restaurant is added to the database', async () => {
+    const response = await axios.get('http://localhost:3010/api/restaurants');
+    const restaurants = response.data;
+
+    let newRestaurant;
+
+    for (let i = 0; i < restaurants.length; i++) {
+        if (restaurants[i].name === 'Port Said') {
+            newRestaurant = restaurants[i];
+            break;
+    }}
+    if (newRestaurant === undefined) {
+        console.log('Restaurant not found');
+        // You can throw an error here or perform other actions as needed
+        throw new Error('Restaurant not found');
+      }
+
+    // expect(newRestaurant).toBeDefined();
+    expect(newRestaurant.location).toEqual('Tel Aviv');
+    expect(newRestaurant.price_range).toEqual('$$');
+});
 
