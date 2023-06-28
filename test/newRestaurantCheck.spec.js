@@ -89,7 +89,7 @@ test('check the latest restaurant in the table', async function () {
 
 test('check if the restaurant is added to the database', async () => {
     const response = await axios.get('http://localhost:3010/api/restaurants');
-    const restaurants = response.data;
+    const restaurants = response.data.data.restaurant;
 
     let newRestaurant;
 
@@ -97,15 +97,14 @@ test('check if the restaurant is added to the database', async () => {
         if (restaurants[i].name === 'Port Said') {
             newRestaurant = restaurants[i];
             break;
-    }}
+        }
+    }
     if (newRestaurant === undefined) {
         console.log('Restaurant not found');
-        // You can throw an error here or perform other actions as needed
         throw new Error('Restaurant not found');
-      }
-
+    }
     // expect(newRestaurant).toBeDefined();
     expect(newRestaurant.location).toEqual('Tel Aviv');
-    expect(newRestaurant.price_range).toEqual('$$');
+    expect(newRestaurant.price_range).toEqual("2");
 });
 
